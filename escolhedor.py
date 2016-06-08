@@ -10,20 +10,12 @@ class menu:
 
     def run(self):
         while True:
-            op = input("1 - Criar Arquivo\n2 - Inserir Registro\n3 - Listar Registros\n4 - Excluir Registros\n5 - Sair\n")
-            
             try:
-                op = int(op)
-                if op == 5:
-                    break
-
-                self.funcoes[op-1]()
-            except TypeError:
-                print("Função inválida")
+                funcoes[ int( input(string_menu) ) + 1 ]()
             except IndexError:
-                print("Função inválida")
-                
-
+                funcoes[0]()
+            except TypeError:
+                funcoes[0]()
 
 if __name__ == "__main__":
     def DUMMY_criar():
@@ -37,8 +29,12 @@ if __name__ == "__main__":
 
     def DUMMY_excluir():
         print("Dummy Excluir")
-
-    menu = menu(DUMMY_criar, DUMMY_inserir, DUMMY_listar, DUMMY_excluir)
+         
+    def DUMMY_error():
+        print("Dummy Erro")
+    funcoes = [DUMMY_error, DUMMY_criar, DUMMY_inserir, DUMMY_listar, DUMMY_excluir]
+    string_menu = "0 Criar\n1 Inserir\n2 listar\n3 Excluir: "
+    menu = menu(funcoes,string_menu)
     menu.run()
 
 
