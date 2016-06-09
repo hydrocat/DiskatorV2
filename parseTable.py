@@ -16,4 +16,3 @@ def parseCreate(arquivo):
     campos = txt[fim+1:-3] #intervalo dentro dos praentesis
     campos = campos.replace(","," ") #tira as virgulas
     campo = [ x for x in campos.split(" ") if len(x) ]
-    
