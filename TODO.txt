@@ -1,0 +1,13 @@
+*****TODAS AS TAREFAS DEVEM SER COMENTADAS*****
+
+tarefas | status
+* implementar o menu | OK 
+* funcionalidades (OBS: não precisa verificar a sentença) | ?
+OBS: as implementações e funcionamento de cada item estão descritos na especificação do projeto
+- create table | ?
+- insert | ?
+- Listar registros | ?
+- Excluir registros | ?
+
+* implementação do arquivo e registros | ?
+* readme com passo a passo da execução e todas as funções implementadas | ?
