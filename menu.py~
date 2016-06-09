@@ -2,7 +2,7 @@ class menu:
 
     """
     Funcoes é uma lista de callbacks 
-    sendo que o primeiro é chamado quando a opção escolhida é inválida
+    sendo que o primeiro é chamdo quando a opção escolhida é inválida
     """
     def __init__(self, funcoes, string_menu):
         self.funcoes = funcoes
