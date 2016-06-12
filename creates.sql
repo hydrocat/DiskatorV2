@@ -11,4 +11,4 @@ create table alunos(
     sexo char(1),
     idade integer,
     altura float
-)
+);
