@@ -7,3 +7,4 @@ insert into empregados( id, nome, salario, posicao) values(
 insert into animais( especie, nome, familia) values(
         "mamifero", "limeira", "canis familiaris"
 );
+
