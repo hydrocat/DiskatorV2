@@ -60,28 +60,7 @@ def SQLinsert(texto):
        values = insert.index("values")
        campos = insert[:values]
        dados = insert[values+1:]
-
-       tempDados = []
-       tempValor = ""
-       temAspas = False
-       for dado in dados:
-           if dado.count("\"") == 1 and not temAspas:
-               tempValor += dado.replace("\"","")
-               temAspas = True
-
-           elif dado.count("\"") == 1 and temAspas:
-               tempValor += " "+dado.replace("\"","")
-               tempDados.append(tempValor)
-               temAspas = False
-               tempValor = ""
-
-           elif temAspas:
-               tempValor += " "+dado
-
-           else:
-               tempDados.append(dado.replace("\"",""))
-
-       dados = tempDados
+       dados = fixAcentos(dados)
                    
                    
        pares = []
@@ -93,13 +72,50 @@ def SQLinsert(texto):
            
    return comandosSQL
 
-def SQLselect(texto):
-    return
+def fixAcentos(dados):
+    tempDados = []
+    tempValor = ""
+    temAspas = False
+    for dado in dados:
+        if dado.count("\"") == 1 and not temAspas:
+            tempValor += dado.replace("\"","")
+            temAspas = True
+
+        elif dado.count("\"") == 1 and temAspas:
+            tempValor += " "+dado.replace("\"","")
+            tempDados.append(tempValor)
+            temAspas = False
+            tempValor = ""
+
+        elif temAspas:
+            tempValor += " "+dado
+
+        else:
+            tempDados.append(dado.replace("\"",""))
+
+    return tempDados
+
+
+def SQLdelete(texto):
+    texto = " ".join(texto.split())
+    deletes = [ x.split() for x in texto.split("delete") if len(x)]
+    comandosSQL =[]
+    for delete in deletes:
+        nomeTabela = delete[1]
+        delete = delete[3:] 
+        dados = fixAcentos(delete)
+        cmd = comandoSQL(nomeTabela, "delete", dados, "")
+        comandosSQL.append(cmd)
+
+    return comandosSQL
+        
 
 def parse(arquivo):
-    texto = open(arquivo,'r').read()
+    texto = open(arquivo,'r').read().lower()
 
-    t = str.maketrans(";,'()", "     ")
+    t = str.maketrans(";,()", "    ")
+    t2 = str.maketrans("'","\"")
+    texto = texto.translate(t2)
     texto = texto.translate(t)
 
     if   "create" in texto:
@@ -107,7 +123,7 @@ def parse(arquivo):
     elif "insert" in texto:
         return SQLinsert(texto)
     elif "delete" in texto:
-        return SQLcreate(texto)
+        return SQLdelete(texto)
 
 if __name__ == "__main__":
-    print (parse( "inserts.sql"))
+    print (parse( "deletes.sql"))
