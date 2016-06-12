@@ -57,7 +57,11 @@ class comandoSQL():
                 ]
     """
 
-    def __init__(self, nomeTabela, comando, dados):
+    def __init__(self, nomeTabela, comando, dados, repBinaria):
         self.nomeTabela = nomeTabela
         self.comando = comando
         self.dados = dados
+        self.repBinaria = repBinaria
+
+    def __repr__(self):
+        return "{} {} '{}' {}".format(self.nomeTabela, self.comando, self.repBinaria , self.dados )
