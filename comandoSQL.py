@@ -3,6 +3,7 @@ class comandoSQL():
     nomeTabela String
     comando CREATE | INSERT | DELETE
     dados lista de pares ("nome do campo","Tipo de dado", [valor])
+    repBinaria e uma string que representa o struct da tabela segundo o padrao do struct.pack (vide pydoc)
 
     exemplo CREATE:
         segundo o create a seguir:
