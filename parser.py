@@ -49,7 +49,49 @@ def getDado( tripla ):
         return tripla[:], -1
 
 def SQLinsert(texto):
-    return
+   texto  = " ".join(texto.split() )
+   inserts = [ x.split() for x in texto.split("insert") if len(x)]
+   comandosSQL =[]
+
+   for insert in inserts:
+       nomeTabela = insert[1]
+       insert = insert[2:]
+       valores = []
+       values = insert.index("values")
+       campos = insert[:values]
+       dados = insert[values+1:]
+
+       tempDados = []
+       tempValor = ""
+       temAspas = False
+       for dado in dados:
+           if dado.count("\"") == 1 and not temAspas:
+               tempValor += dado.replace("\"","")
+               temAspas = True
+
+           elif dado.count("\"") == 1 and temAspas:
+               tempValor += " "+dado.replace("\"","")
+               tempDados.append(tempValor)
+               temAspas = False
+               tempValor = ""
+
+           elif temAspas:
+               tempValor += " "+dado
+
+           else:
+               tempDados.append(dado.replace("\"",""))
+
+       dados = tempDados
+                   
+                   
+       pares = []
+       for i in range( len( dados )):
+           pares.append( [ campos[i], dados[i] ] )
+
+       sql =  comandoSQL(nomeTabela, "insert", pares, "")
+       comandosSQL.append(sql)
+           
+   return comandosSQL
 
 def SQLselect(texto):
     return
@@ -57,7 +99,7 @@ def SQLselect(texto):
 def parse(arquivo):
     texto = open(arquivo,'r').read()
 
-    t = str.maketrans(";,()", "    ")
+    t = str.maketrans(";,'()", "     ")
     texto = texto.translate(t)
 
     if   "create" in texto:
@@ -68,4 +110,4 @@ def parse(arquivo):
         return SQLcreate(texto)
 
 if __name__ == "__main__":
-    parse( "creates.sql")
+    print (parse( "inserts.sql"))
