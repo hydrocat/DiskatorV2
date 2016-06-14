@@ -2,7 +2,6 @@ from funcoes import *
 from parser import *
 import menu as m
 import sys
-import pdb
 
 global arqvs
 global valores
@@ -22,7 +21,6 @@ def sair():
     sys.exit(0)
 
 def createArquivo():
-    pdb.set_trace()
     creates = parse( input("Entre com o nome do arquivo com creates: ")) 
     arquivos = [ arquivo(x.nomeTabela) for x in creates ]
     for i in range( len(arquivos)):

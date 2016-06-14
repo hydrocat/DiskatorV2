@@ -11,11 +11,11 @@ class menu:
     def run(self):
         while True:
             try:
-                funcoes[ int( input(string_menu) ) + 1 ]()
+                self.funcoes[ int( input(self.string_menu) ) + 1 ]()
             except IndexError:
-                funcoes[0]()
+                self.funcoes[0]()
             except TypeError:
-                funcoes[0]()
+                self.funcoes[0]()
 
 if __name__ == "__main__":
     def DUMMY_criar():
