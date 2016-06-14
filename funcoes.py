@@ -61,11 +61,13 @@ class arquivo:
         estrutura = []
         ponteiro = 0
         ##organiza estrutura do metadados
+        pdb.set_trace()
         for linha in metalinhas:
-            linha = str(linha)
+            linha = linha.decode()
             linha += " \0"
             aux = linha.split()
             estrutura.append(aux)
+
         ## seta os valores da insercao
         for i in range(len(estrutura)):
             for dad in reg:
@@ -78,14 +80,14 @@ class arquivo:
         #calcula o tamanho da insercao
         tam = len(estrutura) + 2 ##bitmap + ponteiro
         
-        pdb.set_trace()
+#       pdb.set_trace()
         for i in estrutura:
             if i[e.tipo] == "integer":
                 tam += 4
             elif i[e.tipo] == "boolean":
                 tam += 1
             elif i[e.tipo] == "char":
-                tam += struct.unpack('>'+'h', i[e.tamanho])[0]
+                tam += struct.unpack('>'+'h', i[e.tamanho].encode())[0]
             else:
                 tam += len(i[e.valorc]) + 4 
                 
@@ -120,12 +122,12 @@ class arquivo:
                 if i[e.tipo] == "char":
      #               if i[e.valorc] == '\0':
       #                  bitmap += 2 ** (len(estrutura) - (idx+1))
-                    arq.write(i[e.valorc])
+                    arq.write(i[e.valorc].encode())
                 else:
        #             if i[e.valori] == '\0':
         #                bitmap += 2 ** (len(estrutura) - (idx+1))
                    # print(i[e.valori])
-                    arq.write(i[e.valori])
+                    arq.write(i[e.valori].encode())
             else:
                 posantiga = arq.tell()
                 arq.seek(cablivre-len(i[e.valorc])+1,0)
@@ -133,7 +135,7 @@ class arquivo:
                 cablivre -= len(i[e.valorc])
          #           if i[e.valorc] == '\0':
           #              bitmap += 2 ** (len(estrutura) - (idx+1))
-                arq.write(i[e.valorc])
+                arq.write(i[e.valorc].encode())
                 arq.seek(posantiga)
                 arq.write(struct.pack('>'+'hh', aponta, len(i[e.valorc])))
         print(str(len(estrutura)) + " valores foram inseridos")             
