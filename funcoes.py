@@ -72,8 +72,9 @@ class arquivo:
         ## seta os valores da insercao
         for i in range(len(estrutura)):
             for dad in reg:
-                if estrutura[i][e.nome] == dad[0]:
-                    if ((estrutura[i][e.tipo] == "integer") or (estrutura[i][e.tipo] == "boolean")):
+                #print(dad)
+                if estrutura[i][e.nome] == dad[0].encode():
+                    if ((estrutura[i][e.tipo] == "integer".encode()) or (estrutura[i][e.tipo] == "boolean".encode())):
                         estrutura[i][e.valori] = dad[1]
                     else:
                         #print(dad)
@@ -113,14 +114,16 @@ class arquivo:
         for i in estrutura:
             idx += 1
             if len(i) < 4:
-                if i[e.valori] == '\0':
+                if i[e.valori] == '\0'.encode():
                     bitmap += 2 ** (len(estrutura) - (idx+1))
+                    i[e.valori] = '0'
             else:
-                if i[e.valorc] == '\0':
+                if i[e.valorc] == '\0'.encode():
                     bitmap += 2 ** (len(estrutura) - (idx+1))
-                    
-            if i[e.tipo] != "varchar":
-                if i[e.tipo] == "char":
+                    i[e.valori] = '0'
+           # print(i)
+            if i[e.tipo] != "varchar".encode():
+                if i[e.tipo] == "char".encode():
      #               if i[e.valorc] == '\0':
       #                  bitmap += 2 ** (len(estrutura) - (idx+1))
                     arq.write(i[e.valorc].encode())
@@ -128,8 +131,9 @@ class arquivo:
        #             if i[e.valori] == '\0':
         #                bitmap += 2 ** (len(estrutura) - (idx+1))
                    # print(i[e.valori])
-                    if i[e.tipo] == 'integer':
-                        arq.write(struct.pack('>'+'i',i[e.valori]))
+                    if i[e.tipo] == 'integer'.encode():
+                        #print(i)
+                        arq.write(struct.pack('>'+'i',int(i[e.valori])))
                     else:
                         if i[e.valori] == 't':
                             i[e.valori] = True
@@ -290,8 +294,8 @@ class arquivo:
                     arq.seek(p)
                     for est in estrutura:
                       #  print(est)
-                        print(est)
-                        print()
+                       # print(est)
+                        #print()
                         if est[e.tipo] == "varchar":
                             getp = (struct.unpack('>'+'hh', arq.read(4)))
                             if getp[0] == 0:
