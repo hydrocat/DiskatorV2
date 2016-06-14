@@ -62,7 +62,6 @@ class arquivo:
         estrutura = []
         ponteiro = 0
         ##organiza estrutura do metadados
-        #pdb.set_trace()
         for linha in metalinhas:
          #   print(metalinhas)
             linha = linha#.decode()
@@ -147,7 +146,7 @@ class arquivo:
                 arq.write(i[e.valorc].encode())
                 arq.seek(posantiga)
                 arq.write(struct.pack('>'+'hh', aponta, len(i[e.valorc])))
-        print(str(len(estrutura)) + " valores foram inseridos")             
+        print(str(len(estrutura)) + " valores foram inseridos na tabela " +self.nome )             
         arq.write(struct.pack('>'+'H', bitmap))
         arq.seek(4) #atualiza o livres
         arq.write(struct.pack('>'+'h',novolivre))

@@ -4,10 +4,6 @@ import menu as m
 import sys
 import pdb
 
-global arqvs
-global valores
-arqvs = dict()
-valores = dict()
 
 def erro():
     print(
@@ -22,30 +18,28 @@ def sair():
     sys.exit(0)
 
 def createArquivo():
+    arqvs = dict()
+    valores = dict()
     creates = parse( input("Entre com o nome do arquivo com creates: ")) 
-    arquivos = [ arquivo(x.nomeTabela) for x in creates ]
-    for i in range( len(arquivos)):
-        arqvs.update(  { creates[i].nomeTabela :  arquivos[i] })
-        valores.update({ creates[i].nomeTabela :  creates[i]  })
-
-#    pdb.set_trace()
-    for tabela in arqvs.keys():
-        arqvs[tabela].createArquivo( valores[tabela].dados )
+    for c in creates:
+        arquivo( c.nomeTabela ).createArquivo( c.dados )
         
 def insertRegistro():
+    arqvs = dict()
+    valores = dict()
     inserts = parse( input("Entre com o nome do arquivo com inserts: ") )
     for i in inserts:
-        arqvs[i.nomeTabela].insertRegistro( i.dados )
-        
+        arquivo(i.nomeTabela).insertRegistro( i.dados )
 
 def deleteRegistro():
+    arqvs = dict()
+    valores = dict()
     deletes = parse( input("Entre com o nome do arquivo com deletes: ") )
     for d in deletes:
-        arqvs[i.nomeTabela].deleteRegistro( i.dados )
-
+        arquivo( d.nomeTabela ).deleteRegistro( d.dados )
 def listarRegistro():
     nomeTabela = input("Entre com o nome da tabela: ")
-    arqvs[nomeTabela].listarRegistro()
+    arquivo(nomeTabela).listarRegistro()
 
 if __name__ == "__main__":
     string ="""1 - Sair
