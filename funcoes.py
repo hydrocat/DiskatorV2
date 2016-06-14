@@ -274,9 +274,5 @@ def main():
     reg1 = [["nome", "danielhue"], ["idade",'\x00\x00\x00\x0f' ], ["sexo", 'j']]
 
     arquivo("teste").insertRegistro(reg)
-<<<<<<< Updated upstream
     arquivo("teste").insertRegistro(reg1)
     arquivo("teste").listarRegistro()
-main()
-=======
->>>>>>> Stashed changes
