@@ -10,5 +10,4 @@ create table alunos(
     nome varchar(50),
     sexo char(1),
     idade integer,
-    altura float
 );
