@@ -117,6 +117,8 @@ def parse(arquivo):
     t2 = str.maketrans("'","\"")
     texto = texto.translate(t2)
     texto = texto.translate(t)
+    texto = texto.replace("true",'t')
+    texto = texto.replace("false",'f')
 
     if   "create" in texto:
         return SQLcreate(texto)
