@@ -190,22 +190,21 @@ class arquivo:
                             arq.write()
                             if dado[1] == '=':
                                 if est[1] == dado[2]:
-                                    arq.write(struct.pack('>'+'h',0)
+                                    arq.write(struct.pack('>'+'h',0))
                             elif dado[1] == "!=":
                                 if est[1] != dado[2]:
-                                    arq.write(struct.pack('>'+'h',0)
+                                    arq.write(struct.pack('>'+'h',0))
                             elif dado[1] == '>':
                                 if est[1] > dado[2]:
-                                    arq.write(struct.pack('>'+'h',0)
+                                    arq.write(struct.pack('>'+'h',0))
                             else:
                                 if est[1] < dado[2]: 
-                                    arq.write(struct.pack('>'+'h',0)
+                                    arq.write(struct.pack('>'+'h',0))
                             
                         print(str(est[0])+": "+str(est[1][0]))
                     arq.seek(0)
                     print('\r')
         arq.close()                
-        arq.close() 
     
     ##essa funcao precisa fazer a conversao do binario antes de imprimir
     def listarRegistro(self):
