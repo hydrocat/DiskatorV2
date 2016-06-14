@@ -44,8 +44,8 @@ def deleteRegistro():
         arqvs[i.nomeTabela].deleteRegistro( i.dados )
 
 def listarRegistro():
-    nomeTabela = parse( input("Entre com o nome da tabela: ") )
-    arqs[nomeTabela].listarRegistro()
+    nomeTabela = input("Entre com o nome da tabela: ")
+    arqvs[nomeTabela].listarRegistro()
 
 if __name__ == "__main__":
     string ="""1 - Sair

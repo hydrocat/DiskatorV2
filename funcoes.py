@@ -23,6 +23,7 @@ class arquivo:
             prevnum = False ##apenas indica se o numero anterior era um inteiro
             ##percorre cada caractere do parametro para adionar ao arquivo
             for j in i:
+                j = str(j)
                 if j.isdigit() == True:
                     prevnum = True
                     numcvt += j
@@ -30,17 +31,20 @@ class arquivo:
                     arq.write(struct.pack('>'+'h', int(numcvt))) ##insere o numero inteiro no arquivo
                     numcvt = ''
                     prevnum = False
-                    arq.write(struct.pack('>'+'c', bytes(j,"utf-8"))) #insere todo o metadado bruto com quebra de linhas
+                    j=" "
+                    bytelist = [bytes(x,"utf-8") for x in j]
+                    arq.write(struct.pack('>'+'c'*len(j), *bytelist)) #insere todo o metadado bruto com quebra de linhas
                 else:
-                    pdb.set_trace()
-                    arq.write(struct.pack('>'+'c', bytes(j,"utf-8"))) #insere todo o metadado bruto com quebra de linhas
+                    j+=" "
+                    bytelist = [bytes(x,"utf-8") for x in j]
+                    arq.write(struct.pack('>'+'c'*len(j), *bytelist)) #insere todo o metadado bruto com quebra de linhas
 
             ##se o ultimo parametro era um inteiro entao da um dump no arquivo
             if prevnum == True:
                 arq.write(struct.pack('>'+'h', int(numcvt)))
                 numcvt = ''
                 prevnum = False 
-            arq.write(struct.pack('>' + 'c', '\n')) ##insere uma quebra de linha
+            arq.write(struct.pack('>' + 'c', bytes('\n',"utf-8"))) ##insere uma quebra de linha
         ##encerra o arquivo meta de metadado
         arq.close()
         ##cria o arqivo de dados
@@ -48,7 +52,7 @@ class arquivo:
         ##criando o cabecalho
         arq.write(struct.pack('>'+'hhh', 0,0,2000))
         for i in range(2000-6):
-            arq.write(struct.pack('>'+'c', bytes(" ","utf-8")))
+            arq.write(struct.pack('>'+'c',bytes(" ","utf-8")))
         arq.close()
     
     def insertRegistro(self, reg):
@@ -58,6 +62,7 @@ class arquivo:
         ponteiro = 0
         ##organiza estrutura do metadados
         for linha in metalinhas:
+            linha = str(linha)
             linha += " \0"
             aux = linha.split()
             estrutura.append(aux)
@@ -73,6 +78,7 @@ class arquivo:
         #calcula o tamanho da insercao
         tam = len(estrutura) + 2 ##bitmap + ponteiro
         
+        pdb.set_trace()
         for i in estrutura:
             if i[e.tipo] == "integer":
                 tam += 4
@@ -215,6 +221,7 @@ class arquivo:
         arq = open(self.nome+".data", 'rb+')
         estrutura = []
         estback = []
+            
         ##organiza estrutura do metadados
         for linha in metalinhas:
             aux = linha.split()
