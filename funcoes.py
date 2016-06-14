@@ -3,6 +3,7 @@ import copy
 import sys
 import array
 import struct
+import parser
 #def criaCabecalho():
 ##esta classe e apenas uma enumeracao
 class e:
@@ -61,10 +62,11 @@ class arquivo:
         estrutura = []
         ponteiro = 0
         ##organiza estrutura do metadados
-        pdb.set_trace()
+        #pdb.set_trace()
         for linha in metalinhas:
-            linha = linha.decode()
-            linha += " \0"
+         #   print(metalinhas)
+            linha = linha#.decode()
+            linha += " \0".encode()
             aux = linha.split()
             estrutura.append(aux)
 
@@ -82,12 +84,12 @@ class arquivo:
         
 #       pdb.set_trace()
         for i in estrutura:
-            if i[e.tipo] == "integer":
+            if i[e.tipo] == "integer".encode():
                 tam += 4
-            elif i[e.tipo] == "boolean":
+            elif i[e.tipo] == "boolean".encode():
                 tam += 1
-            elif i[e.tipo] == "char":
-                tam += struct.unpack('>'+'h', i[e.tamanho].encode())[0]
+            elif i[e.tipo] == "char".encode():
+                tam += struct.unpack('>'+'h', i[e.tamanho])[0]
             else:
                 tam += len(i[e.valorc]) + 4 
                 
@@ -237,6 +239,7 @@ class arquivo:
         ##organiza estrutura do metadados
         for linha in metalinhas:
             aux = linha.split()
+            
             if ((aux[1] == "char") or (aux[1] == "varchar")):
                 aux[2] = struct.unpack('>'+'h', aux[2])[0]
                 aux[0] = [aux[0], aux[1], aux[2]]
@@ -272,12 +275,15 @@ class arquivo:
                     estrutura.append(aux[0])
                 bitmap = ["bitmap", 0]
                 estrutura.append(bitmap)
-                print("change")
+                #print("change")
+                printa = []
                 #print(p)
                 if p != 0:
                     arq.seek(p)
                     for est in estrutura:
+                      #  print(est)
                         print(est)
+                        print()
                         if est[e.tipo] == "varchar":
                             getp = (struct.unpack('>'+'hh', arq.read(4)))
                             if getp[0] == 0:
@@ -304,7 +310,8 @@ class arquivo:
                         
                         printa.append(est)
                     for p in printa:
-                        print(str(p[0])+": "+str(p[1]))
+                        if p[0] != 'bitmap':
+                            print(str(p[0])+": "+str(p[1]))
                     
                     arq.seek(0)
                     estrutura = copy.copy(estback)
@@ -313,12 +320,22 @@ class arquivo:
         #print(arq.read());
         #arq.close()
 
-def main(): 
+if __name__ == "__main__": 
+    c = parser.parse("creates.sql")
+    i = parser.parse("inserts.sql")
     met = ["nome varchar 100", "idade integer", "sexo char 1"]
-    arquivo("teste").createArquivo(met)
+    for create in c:
+        arquivo(create.nomeTabela).createArquivo(create.dados)
+    idx = -1
+    for ins in i:
+        idx += 1
+        if idx != 0:
+            arquivo(ins.nomeTabela).insertRegistro(ins.dados)
+
+    arquivo(ins.nomeTabela).listarRegistro()
     reg = [["nome", "daniel"], ["idade",'\x00\x00\x00\x0f' ], ["sexo", 'm']]
     reg1 = [["nome", "danielhue"], ["idade",'\x00\x00\x00\x0f' ], ["sexo", 'j']]
 
-    arquivo("teste").insertRegistro(reg)
-    arquivo("teste").insertRegistro(reg1)
-    arquivo("teste").listarRegistro()
+#    arquivo(c.nomeTabela).insertRegistro(c.dado)
+ #   arquivo("teste").insertRegistro(reg1)
+  #  arquivo("teste").listarRegistro()
