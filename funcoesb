@@ -168,19 +168,6 @@ class arquivo:
                 ponteiros.append(struct.unpack('>'+'h', ponteirobin)[0])
             idx = -1
             for p in ponteiros:
-                metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
-                arq = open(self.nome+".data", 'rb+')
-                estrutura = []
-                estback = []
-                ##organiza estrutura do metadados
-                for linha in metalinhas:
-                    aux = linha.split()
-                    if ((aux[1] == "char") or (aux[1] == "varchar")):
-                        aux[2] = struct.unpack('>'+'h', aux[2])[0]
-                        aux[0] = [aux[0], aux[1], aux[2]]
-                    else:
-                        aux[0] = [aux[0], aux[1]]
-                    estrutura.append(aux[0])
                 idx += 1
                 if p != 0:
                     arq.seek(p)
@@ -239,6 +226,7 @@ class arquivo:
         cabecalhobin = arq.read(6)
         cabecalho = struct.unpack('>'+'hhh', cabecalhobin)
         ##print(cabecalho)
+        estback = copy.copy(estrutura)
         if cabecalho[0]-cabecalho[1] <= 0:
             print("nao ha registros para ser visualizados")
             return(False)
@@ -251,25 +239,12 @@ class arquivo:
                 ponteirobin = arq.read(2)
                 ponteiros.append(struct.unpack('>'+'h', ponteirobin)[0])
             for p in ponteiros:
-                metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
-                arq = open(self.nome+".data", 'rb+')
-                estrutura = []
-                estback = []
-                ##organiza estrutura do metadados
-                for linha in metalinhas:
-                    aux = linha.split()
-                    if ((aux[1] == "char") or (aux[1] == "varchar")):
-                        aux[2] = struct.unpack('>'+'h', aux[2])[0]
-                        aux[0] = [aux[0], aux[1], aux[2]]
-                    else:
-                        aux[0] = [aux[0], aux[1]]
-                    estrutura.append(aux[0])
-            #    print("change")
+                print("change")
                 #print(p)
                 if p != 0:
                     arq.seek(p)
                     for est in estrutura:
-                #        print(est)
+                        print(est)
                         if est[e.tipo] == "varchar":
                             getp = (struct.unpack('>'+'hh', arq.read(4)))
                             posantiga = arq.tell()
@@ -286,6 +261,7 @@ class arquivo:
                     
                         print(str(est[0])+": "+str(est[1][0]))
                     arq.seek(0)
+                    estrutura = copy.copy(estback)
                     print('\r')
         arq.close()                
         #print(arq.read());
