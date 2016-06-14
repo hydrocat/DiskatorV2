@@ -127,7 +127,10 @@ class arquivo:
        #             if i[e.valori] == '\0':
         #                bitmap += 2 ** (len(estrutura) - (idx+1))
                    # print(i[e.valori])
-                    arq.write(i[e.valori].encode())
+                    if i[e.tipo] == 'integer':
+                        arq.write(struct.pack('>'+'i',i[e.valori]))
+                    else:
+                        arq.write(struct.pack('>'+'?',i[e.valori]))
             else:
                 posantiga = arq.tell()
                 arq.seek(cablivre-len(i[e.valorc])+1,0)
