@@ -152,6 +152,7 @@ class arquivo:
         metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
         arq = open(self.nome+".data", 'rb+')
         estrutura = []
+        cont = 0
         ##organiza estrutura do metadados
         for linha in metalinhas:
             aux = linha.split()
@@ -198,7 +199,7 @@ class arquivo:
                             est[1] = struct.unpack('>'+'?', arq.read(1))
                         if est[0] == dado[0]:
                             arq.seek(6+(idx*2))
-                            arq.write()
+                            cont += 1
                             if dado[1] == '=':
                                 if est[1] == dado[2]:
                                     arq.write(struct.pack('>'+'h',0))
@@ -211,10 +212,12 @@ class arquivo:
                             else:
                                 if est[1] < dado[2]: 
                                     arq.write(struct.pack('>'+'h',0))
+                                    
                             
-                        print(str(est[0])+": "+str(est[1][0]))
+                       # print(str(est[0])+": "+str(est[1][0]))
                     arq.seek(0)
-                    print('\r')
+                    #print('\r')
+        print(str(cont)+ " Registro foram removidos")
         arq.close()                
     
     ##essa funcao precisa fazer a conversao do binario antes de imprimir
@@ -223,7 +226,7 @@ class arquivo:
         arq = open(self.nome+".data", 'rb+')
         estrutura = []
         estback = []
-            
+    
         ##organiza estrutura do metadados
         for linha in metalinhas:
             aux = linha.split()
@@ -233,6 +236,8 @@ class arquivo:
             else:
                 aux[0] = [aux[0], aux[1]]
             estrutura.append(aux[0])
+        bitmap = ["bitmap", 0]
+        estrutura.append(bitmap)
          
         cabecalhobin = arq.read(6)
         cabecalho = struct.unpack('>'+'hhh', cabecalhobin)
@@ -250,6 +255,16 @@ class arquivo:
                 ponteirobin = arq.read(2)
                 ponteiros.append(struct.unpack('>'+'h', ponteirobin)[0])
             for p in ponteiros:
+                for linha in metalinhas:
+                    aux = linha.split()
+                    if ((aux[1] == "char") or (aux[1] == "varchar")):
+                        aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                        aux[0] = [aux[0], aux[1], aux[2]]
+                    else:
+                        aux[0] = [aux[0], aux[1]]
+                    estrutura.append(aux[0])
+                bitmap = ["bitmap", 0]
+                estrutura.append(bitmap)
                 print("change")
                 #print(p)
                 if p != 0:
@@ -258,6 +273,9 @@ class arquivo:
                         print(est)
                         if est[e.tipo] == "varchar":
                             getp = (struct.unpack('>'+'hh', arq.read(4)))
+                            if getp[0] == 0:
+                                est[1] = "NULL"
+                                continue
                             posantiga = arq.tell()
                             arq.seek(getp[0])
                            # print(arq.read(getp[1]))
@@ -269,8 +287,18 @@ class arquivo:
                             est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))
                         elif est[e.tipo] == "boolean":
                             est[1] = struct.unpack('>'+'?', arq.read(1))
+                        elif est[e.tipo] == "bitmap": #bitmap
+                            est[1] = bin(struct.unpack('>'+'H', arq.read(2))[0])
+                            est[1] = est[1][2:]
+                            b = '0'*(len(estrutura)-1-len(b))+b
+                            for idx, b in est[1]:
+                                if b == '1':
+                                    printa[idx][1] = "NULL"
+                        
+                        printa.append(est)
+                    for p in printa:
+                        print(str(p[0])+": "+str(p[1]))
                     
-                        print(str(est[0])+": "+str(est[1][0]))
                     arq.seek(0)
                     estrutura = copy.copy(estback)
                     print('\r')
