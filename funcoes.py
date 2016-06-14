@@ -106,7 +106,7 @@ class arquivo:
             ponteiro = cabecalho[2]-tam+1
             novolivre = cabecalho[2]-tam
             bitmap = 0
-        #considerando que o dado passado ja esta em  binario cria o cabecalho, bitmap e insere
+        #considerando que o dado passado ja esta em binario cria o cabecalho, bitmap e insere
         cablivre = cabecalho[2]
         idx = -1
         for i in estrutura:
@@ -130,6 +130,10 @@ class arquivo:
                     if i[e.tipo] == 'integer':
                         arq.write(struct.pack('>'+'i',i[e.valori]))
                     else:
+                        if i[e.valori] == 't':
+                            i[e.valori] = True
+                        else:
+                            i[e.valori] = False
                         arq.write(struct.pack('>'+'?',i[e.valori]))
             else:
                 posantiga = arq.tell()
@@ -192,14 +196,14 @@ class arquivo:
                             posantiga = arq.tell()
                             arq.seek(getp[0])
                            # print(arq.read(getp[1]))
-                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))
+                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))[0]
                             arq.seek(posantiga)
                         elif est[e.tipo] == "integer":
-                            est[1] = struct.unpack('>'+'i', arq.read(4))
+                            est[1] = struct.unpack('>'+'i', arq.read(4))[0]
                         elif est[e.tipo] == "char":
-                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))
+                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))[0]
                         else:
-                            est[1] = struct.unpack('>'+'?', arq.read(1))
+                            est[1] = struct.unpack('>'+'?', arq.read(1))[0]
                         if est[0] == dado[0]:
                             arq.seek(6+(idx*2))
                             cont += 1
@@ -282,14 +286,14 @@ class arquivo:
                             posantiga = arq.tell()
                             arq.seek(getp[0])
                            # print(arq.read(getp[1]))
-                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))
+                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))[0]
                             arq.seek(posantiga)
                         elif est[e.tipo] == "integer":
-                            est[1] = struct.unpack('>'+'i', arq.read(4))
+                            est[1] = struct.unpack('>'+'i', arq.read(4))[0]
                         elif est[e.tipo] == "char":
-                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))
+                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))[0]
                         elif est[e.tipo] == "boolean":
-                            est[1] = struct.unpack('>'+'?', arq.read(1))
+                            est[1] = struct.unpack('>'+'?', arq.read(1))[0]
                         elif est[e.tipo] == "bitmap": #bitmap
                             est[1] = bin(struct.unpack('>'+'H', arq.read(2))[0])
                             est[1] = est[1][2:]
