@@ -1,3 +1,4 @@
+import pdb
 import copy
 import sys
 import array
@@ -29,9 +30,10 @@ class arquivo:
                     arq.write(struct.pack('>'+'h', int(numcvt))) ##insere o numero inteiro no arquivo
                     numcvt = ''
                     prevnum = False
-                    arq.write(struct.pack('>'+'c', j.encode("ascii"))) #insere todo o metadado bruto com quebra de linhas
+                    arq.write(struct.pack('>'+'c', bytes(j,"utf-8"))) #insere todo o metadado bruto com quebra de linhas
                 else:
-                    arq.write(struct.pack('>'+'c', j.encode("ascii"))) #insere todo o metadado bruto com quebra de linhas
+                    pdb.set_trace()
+                    arq.write(struct.pack('>'+'c', bytes(j,"utf-8"))) #insere todo o metadado bruto com quebra de linhas
 
             ##se o ultimo parametro era um inteiro entao da um dump no arquivo
             if prevnum == True:
@@ -46,7 +48,7 @@ class arquivo:
         ##criando o cabecalho
         arq.write(struct.pack('>'+'hhh', 0,0,2000))
         for i in range(2000-6):
-            arq.write(struct.pack('>'+'c', ' '))
+            arq.write(struct.pack('>'+'c', bytes(" ","utf-8")))
         arq.close()
     
     def insertRegistro(self, reg):

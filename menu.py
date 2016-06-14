@@ -10,12 +10,17 @@ class menu:
 
     def run(self):
         while True:
-            try:
-                self.funcoes[ int( input(self.string_menu) ) + 1 ]()
-            except IndexError:
-                self.funcoes[0]()
-            except TypeError:
-                self.funcoes[0]()
+#           try:
+            op = input( self.string_menu )
+            op = int( op )
+            func = self.funcoes[op]
+            func()
+
+                #self.funcoes[ int( input(self.string_menu) ) + 0 ]()
+#           except IndexError:
+#               self.funcoes[0]()
+#           except TypeError:
+#               self.funcoes[0]()
 
 if __name__ == "__main__":
     def DUMMY_criar():

@@ -18,8 +18,8 @@ def SQLcreate(texto):
                 create = create[passo:]
                 repBinaria += getBin( dado[1:] )
         sql =  comandoSQL(nomeTabela, "create", dados, repBinaria)
-        print(sql)
         comandosSQL.append(sql)
+    return comandosSQL
          
         
 def getBin( tipo ):

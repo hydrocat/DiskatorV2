@@ -2,6 +2,7 @@ from funcoes import *
 from parser import *
 import menu as m
 import sys
+import pdb
 
 global arqvs
 global valores
@@ -27,8 +28,9 @@ def createArquivo():
         arqvs.update(  { creates[i].nomeTabela :  arquivos[i] })
         valores.update({ creates[i].nomeTabela :  creates[i]  })
 
+#    pdb.set_trace()
     for tabela in arqvs.keys():
-        arquivos[tabela].createArquivo( valores[tabela].dados )
+        arqvs[tabela].createArquivo( valores[tabela].dados )
         
 def insertRegistro():
     inserts = parse( input("Entre com o nome do arquivo com inserts: ") )
@@ -46,11 +48,11 @@ def listarRegistro():
     arqs[nomeTabela].listarRegistro()
 
 if __name__ == "__main__":
-    string ="""0 - Sair
-1 - Criar Arquivo
-2 - Inserir Registro
-3 - Deletar Registro
-4 - Listar Registro
+    string ="""1 - Sair
+2 - Criar Arquivo
+3 - Inserir Registro
+4 - Deletar Registro
+5 - Listar Registro
 """
     
     funcoes = [ erro, sair, createArquivo, insertRegistro, deleteRegistro, listarRegistro ]
