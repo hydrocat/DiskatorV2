@@ -239,7 +239,12 @@ class arquivo:
         ##organiza estrutura do metadados
         for linha in metalinhas:
             aux = linha.split()
-            
+            for i in range(len(aux)):
+                try:
+                    aux[i] = aux[i].decode()
+                except UnicodeDecodeError:
+                    pass
+                    #aux[i] = struct.unpack('>'+'h', aux[i])
             if ((aux[1] == "char") or (aux[1] == "varchar")):
                 aux[2] = struct.unpack('>'+'h', aux[2])[0]
                 aux[0] = [aux[0], aux[1], aux[2]]
