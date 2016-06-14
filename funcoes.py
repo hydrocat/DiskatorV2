@@ -245,7 +245,11 @@ class arquivo:
                     pass
                     #aux[i] = struct.unpack('>'+'h', aux[i])
             if ((aux[1] == "char") or (aux[1] == "varchar")):
-                aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                try:
+                    aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                except TypeError:
+                    aux[2] = struct.unpack('>h',aux[2].encode())[0]
+                
                 aux[0] = [aux[0], aux[1], aux[2]]
             else:
                 aux[0] = [aux[0], aux[1]]
