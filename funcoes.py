@@ -29,9 +29,9 @@ class arquivo:
                     arq.write(struct.pack('>'+'h', int(numcvt))) ##insere o numero inteiro no arquivo
                     numcvt = ''
                     prevnum = False
-                    arq.write(struct.pack('>'+'c', j)) #insere todo o metadado bruto com quebra de linhas
+                    arq.write(struct.pack('>'+'c', j.encode("ascii"))) #insere todo o metadado bruto com quebra de linhas
                 else:
-                    arq.write(struct.pack('>'+'c', j)) #insere todo o metadado bruto com quebra de linhas
+                    arq.write(struct.pack('>'+'c', j.encode("ascii"))) #insere todo o metadado bruto com quebra de linhas
 
             ##se o ultimo parametro era um inteiro entao da um dump no arquivo
             if prevnum == True:
@@ -298,6 +298,9 @@ def main():
     reg1 = [["nome", "danielhue"], ["idade",'\x00\x00\x00\x0f' ], ["sexo", 'j']]
 
     arquivo("teste").insertRegistro(reg)
+<<<<<<< Updated upstream
     arquivo("teste").insertRegistro(reg1)
     arquivo("teste").listarRegistro()
 main()
+=======
+>>>>>>> Stashed changes
