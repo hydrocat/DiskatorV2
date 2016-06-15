@@ -55,7 +55,7 @@ class arquivo:
         for i in range(2000-6):
             arq.write(struct.pack('>'+'c',bytes(" ","utf-8")))
         arq.close()
-    
+        print("A tabela "+self.nome+" foi criada")
     def insertRegistro(self, reg):
         metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
         arq = open(self.nome+".data", 'rb+')
@@ -119,8 +119,10 @@ class arquivo:
                     i[e.valori] = '0'
             else:
                 if i[e.valorc] == '\0'.encode():
+                #    print(bitmap)
                     bitmap += 2 ** (len(estrutura) - (idx+1))
-                    i[e.valori] = '0'
+                 #   print(bitmap)
+                    i[e.valorc] = '0'
            # print(i)
             if i[e.tipo] != "varchar".encode():
                 if i[e.tipo] == "char".encode():
@@ -161,23 +163,38 @@ class arquivo:
         arq.close()  
 
     def deleteRegistro(self, dado):
-        metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
-        arq = open(self.nome+".data", 'rb+')
-        estrutura = []
         cont = 0
+        metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
+        arq = open(self.nome+".data", 'rb')
+        estrutura = []
+        estback = []
+        posantiga = 0
         ##organiza estrutura do metadados
         for linha in metalinhas:
             aux = linha.split()
+            for i in range(len(aux)):
+                try:
+                    aux[i] = aux[i].decode()
+                except UnicodeDecodeError:
+                    pass
+                    #aux[i] = struct.unpack('>'+'h', aux[i])
             if ((aux[1] == "char") or (aux[1] == "varchar")):
-                aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                try:
+                    aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                except TypeError:
+                    aux[2] = struct.unpack('>h',aux[2].encode())[0]
+                
                 aux[0] = [aux[0], aux[1], aux[2]]
             else:
                 aux[0] = [aux[0], aux[1]]
             estrutura.append(aux[0])
-        
+        bitmap = ["bitmap", 0]
+        estrutura.append(bitmap)
+         
         cabecalhobin = arq.read(6)
         cabecalho = struct.unpack('>'+'hhh', cabecalhobin)
         ##print(cabecalho)
+        estback = copy.copy(estrutura)
         if cabecalho[0]-cabecalho[1] <= 0:
             print("nao ha registros para ser visualizados")
             return(False)
@@ -189,53 +206,98 @@ class arquivo:
                 
                 ponteirobin = arq.read(2)
                 ponteiros.append(struct.unpack('>'+'h', ponteirobin)[0])
-            idx = -1
+            indx = -1
             for p in ponteiros:
-                idx += 1
+                indx += 1
+                metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
+                arq = open(self.nome+".data", 'rb+')
+                estrutura = []
+                estback = []
+            
+                ##organiza estrutura do metadados
+                for linha in metalinhas:
+                    aux = linha.split()
+                    for i in range(len(aux)):
+                        try:
+                            aux[i] = aux[i].decode()
+                        except UnicodeDecodeError:
+                            pass
+                            #aux[i] = struct.unpack('>'+'h', aux[i])
+                    if ((aux[1] == "char") or (aux[1] == "varchar")):
+                        try:
+                            aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                        except TypeError:
+                            aux[2] = struct.unpack('>h',aux[2].encode())[0]
+                        
+                        aux[0] = [aux[0], aux[1], aux[2]]
+                    else:
+                        aux[0] = [aux[0], aux[1]]
+                    estrutura.append(aux[0])
+                bitmap = ["bitmap", "bitmap"]
+                b = ''
+                estrutura.append(bitmap)
+                printa = []
+                #print(estrutura)
                 if p != 0:
                     arq.seek(p)
+                   # print(arq.tell())
                     for est in estrutura:
+                        #print(est)
+                     #   print(est[e.tipo])
                         if est[e.tipo] == "varchar":
+                         #   print(arq.tell())
                             getp = (struct.unpack('>'+'hh', arq.read(4)))
                             #print(getp)
+                            if getp[0] == 0:
+                                continue
                             posantiga = arq.tell()
                             arq.seek(getp[0])
                            # print(arq.read(getp[1]))
-                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))[0]
+                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))[0].decode()
                             arq.seek(posantiga)
                         elif est[e.tipo] == "integer":
+                    #        print("entrou")
                             est[1] = struct.unpack('>'+'i', arq.read(4))[0]
                         elif est[e.tipo] == "char":
-                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))[0]
-                        else:
+                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))[0].decode()
+                        elif est[e.tipo] == "boolean":
                             est[1] = struct.unpack('>'+'?', arq.read(1))[0]
                         if est[0] == dado[0]:
-                            arq.seek(6+(idx*2))
-                            cont += 1
+                            posantiga = arq.tell()
+                            arq.seek(6+(indx*2))
+
                             if dado[1] == '=':
-                                if est[1] == dado[2]:
+                                if str(est[1]) == dado[2]:
+                                    cont += 1
                                     arq.write(struct.pack('>'+'h',0))
                             elif dado[1] == "!=":
-                                if est[1] != dado[2]:
+                                if str(est[1]) != dado[2]:
+                                    cont += 1
                                     arq.write(struct.pack('>'+'h',0))
                             elif dado[1] == '>':
-                                if est[1] > dado[2]:
+                                if est[1] > int(dado[2]):
+                                    cont += 1
                                     arq.write(struct.pack('>'+'h',0))
                             else:
-                                if est[1] < dado[2]: 
+                                #print(type(est[1]))
+                                if est[1] < int(dado[2]): 
+                                    cont += 1
                                     arq.write(struct.pack('>'+'h',0))
-                                    
-                            
+                            arq.seek(posantiga)
+    
                        # print(str(est[0])+": "+str(est[1][0]))
                     arq.seek(0)
                     #print('\r')
-        print(str(cont)+ " Registro foram removidos")
-        arq.close()                
-    
+        arq.seek(0)
+        arq.write(struct.pack('>'+'hhh',cabecalho[0],cabecalho[1]+cont,cabecalho[2]))
+        print(str(cont)+ " Registro(s) foram removido(s)")
+        arq.close()  
+         
+ 
     ##essa funcao precisa fazer a conversao do binario antes de imprimir
     def listarRegistro(self):
         metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
-        arq = open(self.nome+".data", 'rb+')
+        arq = open(self.nome+".data", 'rb')
         estrutura = []
         estback = []
     
@@ -277,46 +339,65 @@ class arquivo:
                 ponteirobin = arq.read(2)
                 ponteiros.append(struct.unpack('>'+'h', ponteirobin)[0])
             for p in ponteiros:
+                metalinhas = [linhas.rstrip() for linhas in open(self.nome+".met", 'rbU')]
+                arq = open(self.nome+".data", 'rb+')
+                estrutura = []
+                estback = []
+            
+                ##organiza estrutura do metadados
                 for linha in metalinhas:
                     aux = linha.split()
+                    for i in range(len(aux)):
+                        try:
+                            aux[i] = aux[i].decode()
+                        except UnicodeDecodeError:
+                            pass
+                            #aux[i] = struct.unpack('>'+'h', aux[i])
                     if ((aux[1] == "char") or (aux[1] == "varchar")):
-                        aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                        try:
+                            aux[2] = struct.unpack('>'+'h', aux[2])[0]
+                        except TypeError:
+                            aux[2] = struct.unpack('>h',aux[2].encode())[0]
+                        
                         aux[0] = [aux[0], aux[1], aux[2]]
                     else:
                         aux[0] = [aux[0], aux[1]]
                     estrutura.append(aux[0])
-                bitmap = ["bitmap", 0]
+                bitmap = ["bitmap", "bitmap"]
+                b = ''
                 estrutura.append(bitmap)
                 #print("change")
                 printa = []
-                #print(p)
+                #print(estrutura)
                 if p != 0:
                     arq.seek(p)
                     for est in estrutura:
-                      #  print(est)
-                       # print(est)
-                        #print()
+                        #print(est)
+                        #print(est[e.tipo])
                         if est[e.tipo] == "varchar":
                             getp = (struct.unpack('>'+'hh', arq.read(4)))
+                    #        print(getp)
                             if getp[0] == 0:
                                 est[1] = "NULL"
                                 continue
                             posantiga = arq.tell()
                             arq.seek(getp[0])
                            # print(arq.read(getp[1]))
-                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))[0]
+                            est[1] = struct.unpack('>'+str(getp[1])+'s', arq.read(getp[1]))[0].decode()
                             arq.seek(posantiga)
                         elif est[e.tipo] == "integer":
                             est[1] = struct.unpack('>'+'i', arq.read(4))[0]
                         elif est[e.tipo] == "char":
-                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))[0]
+                            est[1] = struct.unpack('>'+str(est[2])+'s', arq.read(est[2]))[0].decode()
                         elif est[e.tipo] == "boolean":
                             est[1] = struct.unpack('>'+'?', arq.read(1))[0]
                         elif est[e.tipo] == "bitmap": #bitmap
                             est[1] = bin(struct.unpack('>'+'H', arq.read(2))[0])
                             est[1] = est[1][2:]
-                            b = '0'*(len(estrutura)-1-len(b))+b
-                            for idx, b in est[1]:
+                            bitm = '0'*(len(estrutura)-1-len(est[1]))+est[1]
+                            idx = -1
+                            for b in bitm:
+                                idx += 1
                                 if b == '1':
                                     printa[idx][1] = "NULL"
                         
@@ -335,6 +416,7 @@ class arquivo:
 if __name__ == "__main__": 
     c = parser.parse("creates.sql")
     i = parser.parse("inserts.sql")
+    d = parser.parse("deletes.sql")
     met = ["nome varchar 100", "idade integer", "sexo char 1"]
     for create in c:
         arquivo(create.nomeTabela).createArquivo(create.dados)
@@ -347,7 +429,15 @@ if __name__ == "__main__":
     arquivo(ins.nomeTabela).listarRegistro()
     reg = [["nome", "daniel"], ["idade",'\x00\x00\x00\x0f' ], ["sexo", 'm']]
     reg1 = [["nome", "danielhue"], ["idade",'\x00\x00\x00\x0f' ], ["sexo", 'j']]
+    
+    idx = -1
+    for dels in d:
+        idx += 1
+        if idx != 0:
+            arquivo(dels.nomeTabela).deleteRegistro(dels.dados)
 
+    print("Pos delete: \n")
+    arquivo(ins.nomeTabela).listarRegistro()
 #    arquivo(c.nomeTabela).insertRegistro(c.dado)
  #   arquivo("teste").insertRegistro(reg1)
   #  arquivo("teste").listarRegistro()
